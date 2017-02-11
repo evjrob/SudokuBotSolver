@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">SudokuBot Solver</string>
+
+    <string name="keypad_1">1</string>
+    <string name="keypad_2">1</string>
+    <string name="keypad_3">1</string>
+    <string name="keypad_4">1</string>
+    <string name="keypad_5">1</string>
+    <string name="keypad_6">1</string>
+    <string name="keypad_7">1</string>
+    <string name="keypad_8">1</string>
+    <string name="keypad_9">1</string>
+
+    <string name="keypad_clear_cell">Clear Cell</string>
+
+
+
+</resources>
