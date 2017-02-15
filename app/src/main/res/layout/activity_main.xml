@@ -9,11 +9,19 @@
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/fragment_sudoku_board"
+        android:name="com.everettsprojects.sudokubotsolver.SudokuBoardFragment"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_weight="2"/>
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/fragment_keypad"
         android:name="com.everettsprojects.sudokubotsolver.KeypadFragment"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_weight="2"/>
+        android:layout_weight="3"/>
 
 </LinearLayout>
 
