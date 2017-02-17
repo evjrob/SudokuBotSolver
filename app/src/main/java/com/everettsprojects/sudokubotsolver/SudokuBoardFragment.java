@@ -9,14 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
+import android.widget.TextView;
 
 public class SudokuBoardFragment extends Fragment {
 
-    // Keep an array of the TextView based SudokuCellViews to populate out board
-    SudokuCellView[] sudokuCellViews;
+    // Keep an array of the TextViews to populate out board
+    TextView[] sudokuCellViews;
 
     // Our sudoku game bord will be based on GridLayout
     GridLayout sudokuBoard;
+
+    // Selected cell tracks which cell of the game is currently focused.
+    View selectedCell;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,14 +37,22 @@ public class SudokuBoardFragment extends Fragment {
         // Instantiate the sudokuCellViews array with enough spce for all the cells in the game board
         int columnCount = sudokuBoard.getColumnCount();
         int rowCount = sudokuBoard.getRowCount();
-        sudokuCellViews = new SudokuCellView[rowCount * columnCount];
+        sudokuCellViews = new TextView[rowCount * columnCount];
 
-        // Create each cell and add it to the sudokuBoard GridLayout view
+        // Create each cell and add it to the sudokuBoard GridLayout view then attach a click listener
         for (int yIndex = 0; yIndex < rowCount; yIndex++) {
             for (int xIndex = 0; xIndex < columnCount; xIndex++) {
-                SudokuCellView cellView = new SudokuCellView(this.getActivity(), xIndex, yIndex);
-                sudokuCellViews[yIndex * columnCount + xIndex] = cellView;
-                sudokuBoard.addView(cellView);
+                TextView sudokuCellView = new TextView(this.getActivity());
+                sudokuCellViews[yIndex * columnCount + xIndex] = sudokuCellView;
+                sudokuBoard.addView(sudokuCellView);
+
+                sudokuCellView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        toggleSelectedCell(view);
+                        //return true;
+                    }
+                });
             }
         }
         return rootView;
@@ -69,7 +81,7 @@ public class SudokuBoardFragment extends Fragment {
                         for (int xIndex = 0; xIndex < columnCount; xIndex++) {
 
                             // The currently indexed cell of the sudokuBoard
-                            SudokuCellView cellView = sudokuCellViews[yIndex * columnCount + xIndex];
+                            TextView cellView = sudokuCellViews[yIndex * columnCount + xIndex];
 
                             // Set some of the formatting on the sudokuCellView
                             cellView.setGravity(Gravity.CENTER);
@@ -120,5 +132,69 @@ public class SudokuBoardFragment extends Fragment {
                    sudokuBoard.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
             });
+
+        sudokuBoard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.clearFocus();
+                view.requestFocus();
+            }
+        });
+
+        sudokuBoard.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                View viewSelected = getSelectedCell();
+                // if the selected view exists and it lost focus
+                if (viewSelected != null && !viewSelected.hasFocus()) {
+                    // remove it
+                    removeSelectedCell();
+                }
+            }
+        });
+    }
+
+    // toggleSelectedCell allows for a user to select and deselect a given cell of the sudoku game board,
+    // or simultaneously deselect one cell and select a new one
+    public void toggleSelectedCell(View cell) {
+
+        // If the user has clicked on the already selected cell then we just want to deselect it.
+        boolean deselectOnly = false;
+        if (selectedCell == cell) {
+            deselectOnly = true;
+        }
+
+        removeSelectedCell();
+
+        if (!deselectOnly) {
+            setSelectedCell(cell);
+        }
+    }
+
+    public void setSelectedCell(View cell) {
+        selectedCell = cell;
+        if (selectedCell != null) {
+            // shade the selectedCell to show it has focus.
+            selectedCell.setBackgroundColor(Color.LTGRAY);
+        }
+    }
+
+    public View getSelectedCell() {
+        if (selectedCell != null) {
+            return selectedCell;
+        }
+        return null;
+    }
+
+    public void removeSelectedCell() {
+        if (selectedCell != null) {
+            // restore the background of a deslected cell to white
+            selectedCell.setBackgroundColor(Color.WHITE);
+            selectedCell = null;
+        }
+
+        // clear and reset the focus on the sudoku board
+        sudokuBoard.clearFocus();
+        sudokuBoard.requestFocus();
     }
 }
