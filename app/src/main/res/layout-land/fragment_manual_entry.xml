@@ -7,12 +7,16 @@
     android:orientation="horizontal"
     tools:context="com.everettsprojects.sudokubotsolver.MainActivity">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/fragment_sudoku_board"
-        android:name="com.everettsprojects.sudokubotsolver.SudokuBoardFragment"
-        android:layout_height="match_parent"
+    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/sudoku_board"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="9"
+        android:rowCount="9"
+        android:layout_gravity="center"
+        android:background="@color/colorPrimaryDark"
         android:layout_weight="4"/>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
