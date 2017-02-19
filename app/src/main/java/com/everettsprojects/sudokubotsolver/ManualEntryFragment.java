@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
@@ -23,6 +24,20 @@ public class ManualEntryFragment extends Fragment {
     // Selected cell tracks which cell of the game is currently focused.
     View selectedCell;
 
+    // Keypad buttons
+    private Button mKeyPad1;
+    private Button mKeyPad2;
+    private Button mKeyPad3;
+    private Button mKeyPad4;
+    private Button mKeyPad5;
+    private Button mKeyPad6;
+    private Button mKeyPad7;
+    private Button mKeyPad8;
+    private Button mKeyPad9;
+    private Button mKeyPadClear;
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,9 +48,9 @@ public class ManualEntryFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_manual_entry, container, false);
-        sudokuBoard = (GridLayout) rootView.findViewById(R.id.sudoku_board);
 
         // Instantiate the sudokuCellViews array with enough spce for all the cells in the game board
+        sudokuBoard = (GridLayout) rootView.findViewById(R.id.sudoku_board);
         int columnCount = sudokuBoard.getColumnCount();
         int rowCount = sudokuBoard.getRowCount();
         sudokuCellViews = new TextView[rowCount * columnCount];
@@ -56,6 +71,19 @@ public class ManualEntryFragment extends Fragment {
                 });
             }
         }
+
+        // Set up the keypad buttons
+        mKeyPad1 = (Button) rootView.findViewById(R.id.keypad_1);
+        mKeyPad2 = (Button) rootView.findViewById(R.id.keypad_2);
+        mKeyPad3 = (Button) rootView.findViewById(R.id.keypad_3);
+        mKeyPad4 = (Button) rootView.findViewById(R.id.keypad_4);
+        mKeyPad5 = (Button) rootView.findViewById(R.id.keypad_5);
+        mKeyPad6 = (Button) rootView.findViewById(R.id.keypad_6);
+        mKeyPad7 = (Button) rootView.findViewById(R.id.keypad_7);
+        mKeyPad8 = (Button) rootView.findViewById(R.id.keypad_8);
+        mKeyPad9 = (Button) rootView.findViewById(R.id.keypad_9);
+        mKeyPadClear = (Button) rootView.findViewById(R.id.clear_cell_button);
+
         return rootView;
     }
 
