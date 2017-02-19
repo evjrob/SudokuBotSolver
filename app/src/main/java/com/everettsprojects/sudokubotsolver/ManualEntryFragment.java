@@ -61,9 +61,13 @@ public class ManualEntryFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        // This approach of adding a global layout listener and running onGlobalLayout() once before removing
-        // the listener feels hackish to me, but it was recommended in a couple stack overflow answers as
-        // the best way to resize elements in a GridLayout and it appears to get the job done.
+        /* This approach of adding a global layout listener and running onGlobalLayout() once before removing
+         * the listener appears to be the best way to achieve the resizing of the sudokuBoard's child cells.
+         * I tried to create a custom layout that extended GridLayout and do the resizing in the onLayout()
+         * method, but that led to a huge number of warnings about performance issues from a recursive calling
+         * of the requestLayout function during a layout pass. Setting LayoutParams on the TextViews must
+         * cause requestLayout() to be called at some point.
+         */
         sudokuBoard.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener(){
                     @Override
