@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
-public class ManualEntryFragment extends Fragment {
+public class ManualEntryFragment extends Fragment implements View.OnClickListener {
 
     // Keep an array of the TextViews to populate out board
     TextView[] sudokuCellViews;
@@ -25,16 +25,16 @@ public class ManualEntryFragment extends Fragment {
     View selectedCell;
 
     // Keypad buttons
-    private Button mKeyPad1;
-    private Button mKeyPad2;
-    private Button mKeyPad3;
-    private Button mKeyPad4;
-    private Button mKeyPad5;
-    private Button mKeyPad6;
-    private Button mKeyPad7;
-    private Button mKeyPad8;
-    private Button mKeyPad9;
-    private Button mKeyPadClear;
+    Button mKeyPad1;
+    Button mKeyPad2;
+    Button mKeyPad3;
+    Button mKeyPad4;
+    Button mKeyPad5;
+    Button mKeyPad6;
+    Button mKeyPad7;
+    Button mKeyPad8;
+    Button mKeyPad9;
+    Button mKeyPadClear;
 
 
 
@@ -74,15 +74,27 @@ public class ManualEntryFragment extends Fragment {
 
         // Set up the keypad buttons
         mKeyPad1 = (Button) rootView.findViewById(R.id.keypad_1);
+        mKeyPad1.setOnClickListener(this);
         mKeyPad2 = (Button) rootView.findViewById(R.id.keypad_2);
+        mKeyPad2.setOnClickListener(this);
         mKeyPad3 = (Button) rootView.findViewById(R.id.keypad_3);
+        mKeyPad3.setOnClickListener(this);
         mKeyPad4 = (Button) rootView.findViewById(R.id.keypad_4);
+        mKeyPad4.setOnClickListener(this);
         mKeyPad5 = (Button) rootView.findViewById(R.id.keypad_5);
+        mKeyPad5.setOnClickListener(this);
         mKeyPad6 = (Button) rootView.findViewById(R.id.keypad_6);
+        mKeyPad6.setOnClickListener(this);
         mKeyPad7 = (Button) rootView.findViewById(R.id.keypad_7);
+        mKeyPad7.setOnClickListener(this);
         mKeyPad8 = (Button) rootView.findViewById(R.id.keypad_8);
+        mKeyPad8.setOnClickListener(this);
         mKeyPad9 = (Button) rootView.findViewById(R.id.keypad_9);
+        mKeyPad9.setOnClickListener(this);
         mKeyPadClear = (Button) rootView.findViewById(R.id.clear_cell_button);
+        mKeyPadClear.setOnClickListener(this);
+
+
 
         return rootView;
     }
@@ -118,7 +130,6 @@ public class ManualEntryFragment extends Fragment {
 
                                 // Set some of the formatting on the sudokuCellView
                                 cellView.setGravity(Gravity.CENTER);
-                                cellView.setText(Integer.toString(yIndex * columnCount + xIndex));
                                 cellView.setBackgroundColor(Color.WHITE);
 
                                 // Adjust the layout param of the view including the height and width, and the margins.
@@ -193,6 +204,43 @@ public class ManualEntryFragment extends Fragment {
         });
     }
 
+    // An onCLick function for the keypad
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.keypad_1:
+                setSelectedCellContents("1");
+                break;
+            case R.id.keypad_2:
+                setSelectedCellContents("2");
+                break;
+            case R.id.keypad_3:
+                setSelectedCellContents("3");
+                break;
+            case R.id.keypad_4:
+                setSelectedCellContents("4");
+                break;
+            case R.id.keypad_5:
+                setSelectedCellContents("5");
+                break;
+            case R.id.keypad_6:
+                setSelectedCellContents("6");
+                break;
+            case R.id.keypad_7:
+                setSelectedCellContents("7");
+                break;
+            case R.id.keypad_8:
+                setSelectedCellContents("8");
+                break;
+            case R.id.keypad_9:
+                setSelectedCellContents("9");
+                break;
+            case R.id.clear_cell_button:
+                clearAllCellContents();
+                break;
+        }
+    }
+
     // toggleSelectedCell allows for a user to select and deselect a given cell of the sudoku game board,
     // or simultaneously deselect one cell and select a new one
     public void toggleSelectedCell(View cell) {
@@ -235,5 +283,19 @@ public class ManualEntryFragment extends Fragment {
         // clear and reset the focus on the sudoku board
         sudokuBoard.clearFocus();
         sudokuBoard.requestFocus();
+    }
+
+    private void setSelectedCellContents(String content) {
+        if (selectedCell != null) {
+            ((TextView) selectedCell).setText(content);
+        }
+    }
+
+    private void clearAllCellContents() {
+        for (TextView cell: sudokuCellViews) {
+            if (cell != null) {
+                cell.setText("");
+            }
+        }
     }
 }
