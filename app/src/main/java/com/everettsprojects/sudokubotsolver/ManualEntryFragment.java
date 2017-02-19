@@ -2,6 +2,7 @@ package com.everettsprojects.sudokubotsolver;
 
 import android.app.Fragment;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -96,7 +97,9 @@ public class ManualEntryFragment extends Fragment {
                                 GridLayout.LayoutParams params =
                                         (GridLayout.LayoutParams) sudokuCellViews[yIndex * columnCount + xIndex].getLayoutParams();
 
-                                params.setGravity(Gravity.LEFT);
+                                params.setGravity(Gravity.START);
+                                params.columnSpec = GridLayout.spec(xIndex);
+                                params.rowSpec = GridLayout.spec(yIndex);
 
                                 int topMargin = MARGIN;
                                 int bottomMargin = MARGIN;
@@ -133,7 +136,11 @@ public class ManualEntryFragment extends Fragment {
                         }
 
                         // Remove this layout listener once the cells have been resized.
-                        sudokuBoard.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                            sudokuBoard.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            sudokuBoard.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
                     }
                 });
 
