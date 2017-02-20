@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class ManualEntryFragment extends Fragment implements View.OnClickListener {
 
     // Keep an array of the TextViews to populate out board
@@ -36,8 +38,6 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     Button mKeyPad9;
     Button mKeyPadClear;
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +54,16 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         int columnCount = sudokuBoard.getColumnCount();
         int rowCount = sudokuBoard.getRowCount();
         sudokuCellViews = new TextView[rowCount * columnCount];
+        ArrayList<String> cellContents = new ArrayList<>();
+        int selectedCellIndex = -1;
+        boolean useSavedState = false;
+
+        // Get the savedInstanceState if there is one
+        if (savedInstanceState != null) {
+            cellContents = savedInstanceState.getStringArrayList("cellContents");
+            selectedCellIndex = savedInstanceState.getInt("selectedCellIndex");
+            useSavedState = true;
+        }
 
         // Create each cell and add it to the sudokuBoard GridLayout view then attach a click listener
         for (int yIndex = 0; yIndex < rowCount; yIndex++) {
@@ -61,6 +71,18 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 TextView sudokuCellView = new TextView(this.getActivity());
                 sudokuCellViews[yIndex * columnCount + xIndex] = sudokuCellView;
                 sudokuBoard.addView(sudokuCellView);
+
+                sudokuCellView.setBackgroundColor(Color.WHITE);
+
+                if (useSavedState) {
+                    String content = cellContents.get(yIndex * columnCount + xIndex);
+                    if (content != null) {
+                        sudokuCellView.setText(content);
+                    }
+                    if ((yIndex * columnCount + xIndex) ==  selectedCellIndex) {
+                        toggleSelectedCell(sudokuCellView);
+                    }
+                }
 
                 sudokuCellView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -93,8 +115,6 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         mKeyPad9.setOnClickListener(this);
         mKeyPadClear = (Button) rootView.findViewById(R.id.clear_cell_button);
         mKeyPadClear.setOnClickListener(this);
-
-
 
         return rootView;
     }
@@ -130,7 +150,6 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
                                 // Set some of the formatting on the sudokuCellView
                                 cellView.setGravity(Gravity.CENTER);
-                                cellView.setBackgroundColor(Color.WHITE);
 
                                 // Adjust the layout param of the view including the height and width, and the margins.
                                 GridLayout.LayoutParams params =
@@ -202,6 +221,27 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 }
             }
         });
+    }
+
+    // Store the contents of the sudokuBoard and the index of selectedCell to preserve the
+    // app state through the fragment lifecycle.
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Save the contents of sudokuCellViews and the index of selectedCell
+        ArrayList<String> cellContents = new ArrayList<>();
+        int selectedCellIndex = -1;
+
+        for(int i = 0; i < sudokuCellViews.length; i++) {
+            cellContents.add(i, sudokuCellViews[i].getText().toString());
+            // Also save the index of the selectedCell
+            if (selectedCell == sudokuCellViews[i]) {
+                selectedCellIndex = i;
+            }
+        }
+        outState.putStringArrayList("cellContents", cellContents);
+        outState.putInt("selectedCellIndex", selectedCellIndex);
     }
 
     // An onCLick function for the keypad
