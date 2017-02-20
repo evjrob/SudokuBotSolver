@@ -137,6 +137,14 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         mKeyPad9.setOnClickListener(this);
         mKeyPadClear = (Button) rootView.findViewById(R.id.clear_cell_button);
         mKeyPadClear.setOnClickListener(this);
+        mKeyPadClear.setOnLongClickListener(new View.OnLongClickListener() {
+            // A long click of the clear button will clear the entire grid.
+            @Override
+            public boolean onLongClick(View v) {
+                clearAllCellContents();
+                return true;
+            }
+        });
         mKeyPadSolve = (Button) rootView.findViewById(R.id.solve_button);
         mKeyPadSolve.setOnClickListener(this);
 
@@ -304,7 +312,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 setSelectedCellContents("9");
                 break;
             case R.id.clear_cell_button:
-                clearAllCellContents();
+                setSelectedCellContents("");
                 break;
             case R.id.solve_button:
                 toggleSolve();

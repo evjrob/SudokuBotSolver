@@ -11,7 +11,7 @@
     <string name="keypad_8">8</string>
     <string name="keypad_9">9</string>
 
-    <string name="keypad_clear_cell">Clear Cells</string>
+    <string name="keypad_clear_cell">Clear</string>
     <string name="keypad_solve">Solve</string>
     <string name="keypad_unsolve">Unsolve</string>
 
