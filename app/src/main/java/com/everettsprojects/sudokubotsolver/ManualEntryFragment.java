@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class ManualEntryFragment extends Fragment implements View.OnClickListener {
 
     // Keep an array of the TextViews to populate out board
-    TextView[] sudokuCellViews;
+    ArrayList<TextView> sudokuCellViews;
 
     // Keep track of the original puzzle and solution to facilitate switching between them
     ArrayList<String> unsolvedPuzzle;
@@ -62,7 +62,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         int columnCount = sudokuBoard.getColumnCount();
         int rowCount = sudokuBoard.getRowCount();
 
-        sudokuCellViews = new TextView[rowCount * columnCount];
+        sudokuCellViews = new ArrayList<>();
         unsolvedPuzzle = new ArrayList<>();
         int selectedCellIndex = -1;
         boolean useSavedState = false;
@@ -84,7 +84,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 int flattenedIndex =  yIndex * columnCount + xIndex;
 
                 TextView sudokuCellView = new TextView(this.getActivity());
-                sudokuCellViews[flattenedIndex] = sudokuCellView;
+                sudokuCellViews.add(flattenedIndex, sudokuCellView);
                 sudokuBoard.addView(sudokuCellView);
 
                 // Set the default cell and text colour. Let it be changed again below if the game is
@@ -185,14 +185,14 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                                 int flattenedIndex = yIndex * columnCount + xIndex;
 
                                 // The currently indexed cell of the sudokuBoard
-                                TextView cellView = sudokuCellViews[flattenedIndex];
+                                TextView cell = sudokuCellViews.get(flattenedIndex);
 
                                 // Set some of the formatting on the sudokuCellView
-                                cellView.setGravity(Gravity.CENTER);
+                                cell.setGravity(Gravity.CENTER);
 
                                 // Adjust the layout param of the view including the height and width, and the margins.
                                 GridLayout.LayoutParams params =
-                                        (GridLayout.LayoutParams) sudokuCellViews[flattenedIndex].getLayoutParams();
+                                        (GridLayout.LayoutParams) cell.getLayoutParams();
 
                                 params.setGravity(Gravity.START);
                                 params.columnSpec = GridLayout.spec(xIndex);
@@ -228,7 +228,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                                 }
 
                                 params.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
-                                sudokuCellViews[flattenedIndex].setLayoutParams(params);
+                                cell.setLayoutParams(params);
                             }
                         }
 
@@ -270,8 +270,8 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
         int selectedCellIndex = -1;
 
-        for(int i = 0; i < sudokuCellViews.length; i++) {
-            if (selectedCell == sudokuCellViews[i]) {
+        for(int i = 0; i < sudokuCellViews.size(); i++) {
+            if (selectedCell == sudokuCellViews.get(i)) {
                 selectedCellIndex = i;
             }
         }
@@ -367,7 +367,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     private void setSelectedCellContents(String content) {
         if (selectedCell != null) {
             ((TextView) selectedCell).setText(content);
-            unsolvedPuzzle.set(getIndexofCell(selectedCell),content);
+            unsolvedPuzzle.set(getIndexofCell((TextView) selectedCell),content);
         }
     }
 
@@ -375,22 +375,18 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     // unsolvedPuzzle ArrayList.
     private void clearAllCellContents() {
         unsolve();
-        for (int i = 0; i < sudokuCellViews.length; i++) {
-            if (sudokuCellViews[i] != null) {
-                sudokuCellViews[i].setText("");
+        for (int i = 0; i < sudokuCellViews.size(); i++) {
+            TextView cell = sudokuCellViews.get(i);
+            if (cell != null) {
+                cell.setText("");
                 unsolvedPuzzle.set(i, "");
             }
         }
 
     }
 
-    private int getIndexofCell(View cell) {
-        for (int i = 0; i < sudokuCellViews.length; i++) {
-            if (cell == sudokuCellViews[i]) {
-                return i;
-            }
-        }
-        return -1;
+    private int getIndexofCell(TextView cell) {
+        return sudokuCellViews.indexOf(cell);
     }
 
     // Solve runs the sudokuBotDlx code to get a solution, and then displays that solution on the
@@ -399,25 +395,27 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
         ArrayList<String> solvedPuzzle = Utility.solvePuzzle(unsolvedPuzzle);
         if (!solvedPuzzle.isEmpty()) {
-            for (int i = 0; i < sudokuCellViews.length; i++) {
+            for (int i = 0; i < sudokuCellViews.size(); i++) {
                 String solvedCell = solvedPuzzle.get(i);
                 String unsolvedCell = unsolvedPuzzle.get(i);
+                TextView cell = sudokuCellViews.get(i);
 
-                sudokuCellViews[i].setText(solvedCell);
+                cell.setText(solvedCell);
 
                 if (!solvedCell.equals(unsolvedCell)) {
-                    sudokuCellViews[i].setTextColor(getResources().getColor(R.color.solvedGreen));
+                    cell.setTextColor(getResources().getColor(R.color.solvedGreen));
                 } else {
-                    sudokuCellViews[i].setTypeface(null, Typeface.BOLD);
+                    cell.setTypeface(null, Typeface.BOLD);
                 }
             }
         } else {
-            for (int i = 0; i < sudokuCellViews.length; i++) {
+            for (int i = 0; i < sudokuCellViews.size(); i++) {
                 String unsolvedCell = unsolvedPuzzle.get(i);
+                TextView cell = sudokuCellViews.get(i);
 
-                sudokuCellViews[i].setText(unsolvedCell);
-                sudokuCellViews[i].setTextColor(getResources().getColor(R.color.impossibleRed));
-                sudokuCellViews[i].setTypeface(null, Typeface.BOLD);
+                cell.setText(unsolvedCell);
+                cell.setTextColor(getResources().getColor(R.color.impossibleRed));
+                cell.setTypeface(null, Typeface.BOLD);
             }
 
             Toast toast = Toast.makeText(getActivity(), "This sudoku is impossible to solve.",
@@ -432,10 +430,11 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
     // Unsolve sets the gameboard back to the state it was in
     private void unsolve() {
-        for (int i = 0; i < sudokuCellViews.length; i++) {
-            sudokuCellViews[i].setText(unsolvedPuzzle.get(i));
-            sudokuCellViews[i].setTypeface(null, Typeface.NORMAL);
-            sudokuCellViews[i].setTextColor(Color.DKGRAY);
+        for (int i = 0; i < sudokuCellViews.size(); i++) {
+            TextView cell = sudokuCellViews.get(i);
+            cell.setText(unsolvedPuzzle.get(i));
+            cell.setTypeface(null, Typeface.NORMAL);
+            cell.setTextColor(Color.DKGRAY);
         }
 
         displaySolved = false;
