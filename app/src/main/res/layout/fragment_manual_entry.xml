@@ -96,12 +96,27 @@
                 android:text="@string/keypad_9"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/clear_cell_button"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/keypad_clear_cell"/>
+            android:layout_gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/clear_cell_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/keypad_clear_cell"/>
+
+            <Button
+                android:id="@+id/solve_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/keypad_solve"/>
+        </LinearLayout>
+
 
     </LinearLayout>
 

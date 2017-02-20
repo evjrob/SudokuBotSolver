@@ -2,6 +2,7 @@ package com.everettsprojects.sudokubotsolver;
 
 import android.app.Fragment;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -12,6 +13,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,10 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
     // Keep an array of the TextViews to populate out board
     TextView[] sudokuCellViews;
+
+    // Keep track of the original puzzle and solution to facilitate switching between them
+    ArrayList<String> unsolvedPuzzle;
+    boolean displaySolved = false;
 
     // Our sudoku game bord will be based on GridLayout
     GridLayout sudokuBoard;
@@ -37,6 +43,8 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     Button mKeyPad8;
     Button mKeyPad9;
     Button mKeyPadClear;
+    Button mKeyPadSolve;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,42 +61,56 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         sudokuBoard = (GridLayout) rootView.findViewById(R.id.sudoku_board);
         int columnCount = sudokuBoard.getColumnCount();
         int rowCount = sudokuBoard.getRowCount();
+
         sudokuCellViews = new TextView[rowCount * columnCount];
-        ArrayList<String> cellContents = new ArrayList<>();
+        unsolvedPuzzle = new ArrayList<>();
         int selectedCellIndex = -1;
         boolean useSavedState = false;
 
-        // Get the savedInstanceState if there is one
+        // Restore the savedInstanceState if there is one
         if (savedInstanceState != null) {
-            cellContents = savedInstanceState.getStringArrayList("cellContents");
+            unsolvedPuzzle = savedInstanceState.getStringArrayList("unsolvedPuzzle");
             selectedCellIndex = savedInstanceState.getInt("selectedCellIndex");
+            displaySolved = savedInstanceState.getBoolean("displaySolved");
             useSavedState = true;
         }
 
-        // Create each cell and add it to the sudokuBoard GridLayout view then attach a click listener
+        // Create each cell and add it to the sudokuBoard GridLayout with the right formatting and a clickListener
         for (int yIndex = 0; yIndex < rowCount; yIndex++) {
             for (int xIndex = 0; xIndex < columnCount; xIndex++) {
+
+                // flattenedIndex is used to index the textViews and strings in one dimensional
+                // array lists like sudokuCellViews and un
+                int flattenedIndex =  yIndex * columnCount + xIndex;
+
                 TextView sudokuCellView = new TextView(this.getActivity());
-                sudokuCellViews[yIndex * columnCount + xIndex] = sudokuCellView;
+                sudokuCellViews[flattenedIndex] = sudokuCellView;
                 sudokuBoard.addView(sudokuCellView);
 
+                // Set the default cell and text colour. Let it be changed again below if the game is
+                // in the displaySolved State.
                 sudokuCellView.setBackgroundColor(Color.WHITE);
+                sudokuCellView.setTextColor(Color.DKGRAY);
 
+                // If we had a saved state then restore those values.
                 if (useSavedState) {
-                    String content = cellContents.get(yIndex * columnCount + xIndex);
-                    if (content != null) {
-                        sudokuCellView.setText(content);
+                    String unsolvedCell = unsolvedPuzzle.get(flattenedIndex);
+
+                    if (unsolvedCell != null) {
+                        sudokuCellView.setText(unsolvedCell);
                     }
-                    if ((yIndex * columnCount + xIndex) ==  selectedCellIndex) {
+                    if (flattenedIndex ==  selectedCellIndex) {
                         toggleSelectedCell(sudokuCellView);
                     }
+                } else {
+                    unsolvedPuzzle.add(flattenedIndex, "");
                 }
 
+                // Add the ClickListener and onClick() method for this cell.
                 sudokuCellView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         toggleSelectedCell(view);
-                        //return true;
                     }
                 });
             }
@@ -115,6 +137,13 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         mKeyPad9.setOnClickListener(this);
         mKeyPadClear = (Button) rootView.findViewById(R.id.clear_cell_button);
         mKeyPadClear.setOnClickListener(this);
+        mKeyPadSolve = (Button) rootView.findViewById(R.id.solve_button);
+        mKeyPadSolve.setOnClickListener(this);
+
+        // Return the sudokuBoard to the solved state if that's how it was before.
+        if (displaySolved) {
+            solve();
+        }
 
         return rootView;
     }
@@ -145,15 +174,17 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                         for (int yIndex = 0; yIndex < rowCount; yIndex++) {
                             for (int xIndex = 0; xIndex < columnCount; xIndex++) {
 
+                                int flattenedIndex = yIndex * columnCount + xIndex;
+
                                 // The currently indexed cell of the sudokuBoard
-                                TextView cellView = sudokuCellViews[yIndex * columnCount + xIndex];
+                                TextView cellView = sudokuCellViews[flattenedIndex];
 
                                 // Set some of the formatting on the sudokuCellView
                                 cellView.setGravity(Gravity.CENTER);
 
                                 // Adjust the layout param of the view including the height and width, and the margins.
                                 GridLayout.LayoutParams params =
-                                        (GridLayout.LayoutParams) sudokuCellViews[yIndex * columnCount + xIndex].getLayoutParams();
+                                        (GridLayout.LayoutParams) sudokuCellViews[flattenedIndex].getLayoutParams();
 
                                 params.setGravity(Gravity.START);
                                 params.columnSpec = GridLayout.spec(xIndex);
@@ -189,7 +220,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                                 }
 
                                 params.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
-                                sudokuCellViews[yIndex * columnCount + xIndex].setLayoutParams(params);
+                                sudokuCellViews[flattenedIndex].setLayoutParams(params);
                             }
                         }
 
@@ -229,22 +260,19 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        // Save the contents of sudokuCellViews and the index of selectedCell
-        ArrayList<String> cellContents = new ArrayList<>();
         int selectedCellIndex = -1;
 
         for(int i = 0; i < sudokuCellViews.length; i++) {
-            cellContents.add(i, sudokuCellViews[i].getText().toString());
-            // Also save the index of the selectedCell
             if (selectedCell == sudokuCellViews[i]) {
                 selectedCellIndex = i;
             }
         }
-        outState.putStringArrayList("cellContents", cellContents);
+        outState.putStringArrayList("unsolvedPuzzle", unsolvedPuzzle);
         outState.putInt("selectedCellIndex", selectedCellIndex);
+        outState.putBoolean("displaySolved", displaySolved);
     }
 
-    // An onCLick function for the keypad
+    // An onClick function for the keypad
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -278,6 +306,9 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
             case R.id.clear_cell_button:
                 clearAllCellContents();
                 break;
+            case R.id.solve_button:
+                toggleSolve();
+                break;
         }
     }
 
@@ -302,7 +333,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         selectedCell = cell;
         if (selectedCell != null) {
             // shade the selectedCell to show it has focus.
-            selectedCell.setBackgroundColor(Color.LTGRAY);
+            selectedCell.setBackgroundColor(getResources().getColor(R.color.selectedBlue));
         }
     }
 
@@ -328,14 +359,89 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     private void setSelectedCellContents(String content) {
         if (selectedCell != null) {
             ((TextView) selectedCell).setText(content);
+            unsolvedPuzzle.set(getIndexofCell(selectedCell),content);
         }
     }
 
+    // Clear the contents of all cells in the sudokuBoard and the supporting contents in the
+    // unsolvedPuzzle ArrayList.
     private void clearAllCellContents() {
-        for (TextView cell: sudokuCellViews) {
-            if (cell != null) {
-                cell.setText("");
+        unsolve();
+        for (int i = 0; i < sudokuCellViews.length; i++) {
+            if (sudokuCellViews[i] != null) {
+                sudokuCellViews[i].setText("");
+                unsolvedPuzzle.set(i, "");
             }
+        }
+
+    }
+
+    private int getIndexofCell(View cell) {
+        for (int i = 0; i < sudokuCellViews.length; i++) {
+            if (cell == sudokuCellViews[i]) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Solve runs the sudokuBotDlx code to get a solution, and then displays that solution on the
+    // sudoku game board.
+    private void solve() {
+
+        ArrayList<String> solvedPuzzle = Utility.solvePuzzle(unsolvedPuzzle);
+        if (!solvedPuzzle.isEmpty()) {
+            for (int i = 0; i < sudokuCellViews.length; i++) {
+                String solvedCell = solvedPuzzle.get(i);
+                String unsolvedCell = unsolvedPuzzle.get(i);
+
+                sudokuCellViews[i].setText(solvedCell);
+
+                if (!solvedCell.equals(unsolvedCell)) {
+                    sudokuCellViews[i].setTextColor(getResources().getColor(R.color.solvedGreen));
+                } else {
+                    sudokuCellViews[i].setTypeface(null, Typeface.BOLD);
+                }
+            }
+        } else {
+            for (int i = 0; i < sudokuCellViews.length; i++) {
+                String unsolvedCell = unsolvedPuzzle.get(i);
+
+                sudokuCellViews[i].setText(unsolvedCell);
+                sudokuCellViews[i].setTextColor(getResources().getColor(R.color.impossibleRed));
+                sudokuCellViews[i].setTypeface(null, Typeface.BOLD);
+            }
+
+            Toast toast = Toast.makeText(getActivity(), "This sudoku is impossible to solve.",
+                    Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+
+        displaySolved = true;
+        mKeyPadSolve.setText(R.string.keypad_unsolve);
+    }
+
+    // Unsolve sets the gameboard back to the state it was in
+    private void unsolve() {
+        for (int i = 0; i < sudokuCellViews.length; i++) {
+            sudokuCellViews[i].setText(unsolvedPuzzle.get(i));
+            sudokuCellViews[i].setTypeface(null, Typeface.NORMAL);
+            sudokuCellViews[i].setTextColor(Color.DKGRAY);
+        }
+
+        displaySolved = false;
+        mKeyPadSolve.setText(R.string.keypad_solve);
+
+    }
+
+    // ToggleSolve is a wrapper method that makes it easy for the solve button to double as the
+    // unsolve button given the displayed state of the game board.
+    private void toggleSolve() {
+        if (displaySolved) {
+            unsolve();
+        } else if (!displaySolved) {
+            solve();
         }
     }
 }
