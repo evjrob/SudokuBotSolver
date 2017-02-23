@@ -30,8 +30,6 @@ public class SudokuLayout extends GridLayout implements View.OnClickListener{
         setOnClickListener(this);
     }
 
-    // when positioning all children within this
-    // layout, add their focusable state
     @Override
     protected void onLayout(boolean c, int l, int t, int r, int b) {
         super.onLayout(c, l, t, r, b);

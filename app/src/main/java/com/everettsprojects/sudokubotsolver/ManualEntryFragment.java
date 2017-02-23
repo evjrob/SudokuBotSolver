@@ -9,15 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class ManualEntryFragment extends Fragment implements View.OnClickListener {
 
-    // Keep an array of the TextViews to populate out board
-    ArrayList<TextView> sudokuCellViews;
+    // Keep an array list of the TextViews to populate out board
+    ArrayList<SudokuCellView> sudokuCellViews;
 
     // Keep track of the original puzzle and solution to facilitate switching between them
     ArrayList<String> unsolvedPuzzle;
@@ -76,11 +75,11 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         for (int yIndex = 0; yIndex < rowCount; yIndex++) {
             for (int xIndex = 0; xIndex < columnCount; xIndex++) {
 
-                // flattenedIndex is used to index the textViews and strings in one dimensional
+                // flattenedIndex is used to index the sudoku cells and strings in one dimensional
                 // array lists like sudokuCellViews and un
                 int flattenedIndex =  yIndex * columnCount + xIndex;
 
-                TextView sudokuCellView = new TextView(this.getActivity());
+                SudokuCellView sudokuCellView = new SudokuCellView(this.getActivity());
                 sudokuCellViews.add(flattenedIndex, sudokuCellView);
                 sudokuBoard.addView(sudokuCellView);
 
@@ -89,9 +88,6 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 sudokuCellView.setBackgroundColor(Color.WHITE);
                 sudokuCellView.setTextColor(Color.DKGRAY);
                 sudokuCellView.setGravity(Gravity.CENTER);
-                sudokuCellView.setTextSize(22);
-                sudokuCellView.setWidth(sudokuCellView.getWidth());
-                sudokuCellView.setHeight(sudokuCellView.getHeight());
 
                 // If we had a saved state then restore those values.
                 if (useSavedState) {
@@ -277,8 +273,8 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
     private void setSelectedCellContents(String content) {
         if (selectedCell != null) {
-            ((TextView) selectedCell).setText(content);
-            unsolvedPuzzle.set(getIndexofCell((TextView) selectedCell),content);
+            ((SudokuCellView) selectedCell).setText(content);
+            unsolvedPuzzle.set(getIndexofCell((SudokuCellView) selectedCell),content);
         }
     }
 
@@ -287,7 +283,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     private void clearAllCellContents() {
         unsolve();
         for (int i = 0; i < sudokuCellViews.size(); i++) {
-            TextView cell = sudokuCellViews.get(i);
+            SudokuCellView cell = sudokuCellViews.get(i);
             if (cell != null) {
                 cell.setText("");
                 unsolvedPuzzle.set(i, "");
@@ -296,7 +292,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private int getIndexofCell(TextView cell) {
+    private int getIndexofCell(SudokuCellView cell) {
         return sudokuCellViews.indexOf(cell);
     }
 
@@ -309,7 +305,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
             for (int i = 0; i < sudokuCellViews.size(); i++) {
                 String solvedCell = solvedPuzzle.get(i);
                 String unsolvedCell = unsolvedPuzzle.get(i);
-                TextView cell = sudokuCellViews.get(i);
+                SudokuCellView cell = sudokuCellViews.get(i);
 
                 cell.setText(solvedCell);
 
@@ -322,7 +318,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         } else {
             for (int i = 0; i < sudokuCellViews.size(); i++) {
                 String unsolvedCell = unsolvedPuzzle.get(i);
-                TextView cell = sudokuCellViews.get(i);
+                SudokuCellView cell = sudokuCellViews.get(i);
 
                 cell.setText(unsolvedCell);
                 cell.setTextColor(getResources().getColor(R.color.impossibleRed));
@@ -342,7 +338,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     // Unsolve sets the gameboard back to the state it was in
     private void unsolve() {
         for (int i = 0; i < sudokuCellViews.size(); i++) {
-            TextView cell = sudokuCellViews.get(i);
+            SudokuCellView cell = sudokuCellViews.get(i);
             cell.setText(unsolvedPuzzle.get(i));
             cell.setTypeface(null, Typeface.NORMAL);
             cell.setTextColor(Color.DKGRAY);
