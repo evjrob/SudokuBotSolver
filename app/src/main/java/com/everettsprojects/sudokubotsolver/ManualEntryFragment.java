@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +67,6 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         // Restore the savedInstanceState if there is one
         if (savedInstanceState != null) {
             unsolvedPuzzle = savedInstanceState.getStringArrayList("unsolvedPuzzle");
-            selectedCellIndex = savedInstanceState.getInt("selectedCellIndex");
             displaySolved = savedInstanceState.getBoolean("displaySolved");
             useSavedState = true;
         }
@@ -248,7 +248,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         selectedCell = cell;
         if (selectedCell != null) {
             // shade the selectedCell to show it has focus.
-            selectedCell.setBackgroundColor(getResources().getColor(R.color.selectedBlue));
+            selectedCell.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.selectedBlue));
         }
     }
 
@@ -310,7 +310,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 cell.setText(solvedCell);
 
                 if (!solvedCell.equals(unsolvedCell)) {
-                    cell.setTextColor(getResources().getColor(R.color.solvedGreen));
+                    cell.setTextColor(ContextCompat.getColor(getActivity(), R.color.solvedGreen));
                 } else {
                     cell.setTypeface(null, Typeface.BOLD);
                 }
@@ -321,7 +321,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 SudokuCellView cell = sudokuCellViews.get(i);
 
                 cell.setText(unsolvedCell);
-                cell.setTextColor(getResources().getColor(R.color.impossibleRed));
+                cell.setTextColor(ContextCompat.getColor(getActivity(), R.color.impossibleRed));
                 cell.setTypeface(null, Typeface.BOLD);
             }
 
