@@ -68,6 +68,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         if (savedInstanceState != null) {
             unsolvedPuzzle = savedInstanceState.getStringArrayList("unsolvedPuzzle");
             displaySolved = savedInstanceState.getBoolean("displaySolved");
+            selectedCellIndex = savedInstanceState.getInt("selectedCellIndex");
             useSavedState = true;
         }
 
