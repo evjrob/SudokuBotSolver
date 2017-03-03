@@ -290,7 +290,6 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 unsolvedPuzzle.set(i, "");
             }
         }
-
     }
 
     private int getIndexofCell(SudokuCellView cell) {
@@ -334,6 +333,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
         displaySolved = true;
         mKeyPadSolve.setText(R.string.keypad_unsolve);
+        toggleKeypadEnabled();
     }
 
     // Unsolve sets the gameboard back to the state it was in
@@ -347,7 +347,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
         displaySolved = false;
         mKeyPadSolve.setText(R.string.keypad_solve);
-
+        toggleKeypadEnabled();
     }
 
     // ToggleSolve is a wrapper method that makes it easy for the solve button to double as the
@@ -358,5 +358,23 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         } else if (!displaySolved) {
             solve();
         }
+    }
+
+    // ToggleKeypadEnabled is a function that allows the numeric inputs to be enabled and disable
+    // so that accidental input cannot occur when the puzzle is in the solved state
+    private void toggleKeypadEnabled() {
+
+        // The keypad should be enabled iff the solution is not being displayed.
+        boolean keyPadEnabled = !displaySolved;
+
+        mKeyPad1.setEnabled(keyPadEnabled);
+        mKeyPad2.setEnabled(keyPadEnabled);
+        mKeyPad3.setEnabled(keyPadEnabled);
+        mKeyPad4.setEnabled(keyPadEnabled);
+        mKeyPad5.setEnabled(keyPadEnabled);
+        mKeyPad6.setEnabled(keyPadEnabled);
+        mKeyPad7.setEnabled(keyPadEnabled);
+        mKeyPad8.setEnabled(keyPadEnabled);
+        mKeyPad9.setEnabled(keyPadEnabled);
     }
 }
