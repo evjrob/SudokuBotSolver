@@ -322,13 +322,16 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 }
             }
         } else {
+            ArrayList<Boolean> contradictions = Utility.findPuzzleContradictions(unsolvedPuzzle);
             for (int i = 0; i < sudokuCellViews.size(); i++) {
                 String unsolvedCell = unsolvedPuzzle.get(i);
                 SudokuCellView cell = sudokuCellViews.get(i);
 
                 cell.setText(unsolvedCell);
-                cell.setTextColor(ContextCompat.getColor(getActivity(), R.color.impossibleRed));
-                cell.setTypeface(null, Typeface.BOLD);
+                if (contradictions.get(i)) {
+                    cell.setTextColor(ContextCompat.getColor(getActivity(), R.color.impossibleRed));
+                    cell.setTypeface(null, Typeface.BOLD);
+                }
             }
 
             Toast toast = Toast.makeText(getActivity(), "This sudoku is impossible to solve.",
