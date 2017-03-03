@@ -104,6 +104,13 @@
             android:layout_gravity="center_horizontal">
 
             <Button
+                android:id="@+id/clear_all_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/keypad_clear_all"/>
+
+            <Button
                 android:id="@+id/clear_cell_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

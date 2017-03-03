@@ -39,6 +39,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     Button mKeyPad7;
     Button mKeyPad8;
     Button mKeyPad9;
+    Button mKeyPadClearAll;
     Button mKeyPadClear;
     Button mKeyPadSolve;
 
@@ -78,7 +79,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
                 // flattenedIndex is used to index the sudoku cells and strings in one dimensional
                 // array lists like sudokuCellViews and un
-                int flattenedIndex =  yIndex * columnCount + xIndex;
+                int flattenedIndex = yIndex * columnCount + xIndex;
 
                 SudokuCellView sudokuCellView = new SudokuCellView(this.getActivity());
                 sudokuCellViews.add(flattenedIndex, sudokuCellView);
@@ -97,7 +98,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                     if (unsolvedCell != null) {
                         sudokuCellView.setText(unsolvedCell);
                     }
-                    if (flattenedIndex ==  selectedCellIndex) {
+                    if (flattenedIndex == selectedCellIndex) {
                         toggleSelectedCell(sudokuCellView);
                     }
                 } else {
@@ -135,7 +136,9 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         mKeyPad9.setOnClickListener(this);
         mKeyPadClear = (Button) rootView.findViewById(R.id.clear_cell_button);
         mKeyPadClear.setOnClickListener(this);
-        mKeyPadClear.setOnLongClickListener(new View.OnLongClickListener() {
+        mKeyPadClearAll = (Button) rootView.findViewById(R.id.clear_all_button);
+        mKeyPadClearAll.setOnClickListener(this);
+        mKeyPadClearAll.setOnLongClickListener(new View.OnLongClickListener() {
             // A long click of the clear button will clear the entire grid.
             @Override
             public boolean onLongClick(View v) {
@@ -178,7 +181,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
 
         int selectedCellIndex = -1;
 
-        for(int i = 0; i < sudokuCellViews.size(); i++) {
+        for (int i = 0; i < sudokuCellViews.size(); i++) {
             if (selectedCell == sudokuCellViews.get(i)) {
                 selectedCellIndex = i;
             }
@@ -221,6 +224,9 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.clear_cell_button:
                 setSelectedCellContents("");
+                break;
+            case R.id.clear_all_button:
+                createClearAllToast();
                 break;
             case R.id.solve_button:
                 toggleSolve();
@@ -275,7 +281,7 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
     private void setSelectedCellContents(String content) {
         if (selectedCell != null) {
             ((SudokuCellView) selectedCell).setText(content);
-            unsolvedPuzzle.set(getIndexofCell((SudokuCellView) selectedCell),content);
+            unsolvedPuzzle.set(getIndexofCell((SudokuCellView) selectedCell), content);
         }
     }
 
@@ -376,5 +382,13 @@ public class ManualEntryFragment extends Fragment implements View.OnClickListene
         mKeyPad7.setEnabled(keyPadEnabled);
         mKeyPad8.setEnabled(keyPadEnabled);
         mKeyPad9.setEnabled(keyPadEnabled);
+        mKeyPadClear.setEnabled(keyPadEnabled);
+    }
+
+    //
+    private void createClearAllToast() {
+        Toast toast = Toast.makeText(getActivity(), "Please press the button longer to confirm",
+                Toast.LENGTH_SHORT);
+        toast.show();
     }
 }
