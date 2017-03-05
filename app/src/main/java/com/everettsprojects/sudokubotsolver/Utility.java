@@ -12,7 +12,7 @@ class Utility {
 
     private static final String TAG = "GoDLX";
 
-    private static String convertGridToString(ArrayList<String> unsolvedPuzzle) {
+    static String convertGridToString(ArrayList<String> unsolvedPuzzle) {
 
         String puzzleString = "";
 
@@ -33,7 +33,7 @@ class Utility {
         return puzzleString;
     }
 
-    private static ArrayList<String> convertStringToArray(String solvedPuzzle) {
+    static ArrayList<String> convertStringToArray(String solvedPuzzle) {
 
         return new ArrayList<>(Arrays.asList(solvedPuzzle.split(",")));
     }
