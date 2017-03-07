@@ -15,5 +15,6 @@
     <string name="keypad_solve">Solve</string>
     <string name="keypad_unsolve">Unsolve</string>
     <string name="keypad_clear_all">Clear All</string>
+    <string name="action_github">GitHub</string>
 
 </resources>
