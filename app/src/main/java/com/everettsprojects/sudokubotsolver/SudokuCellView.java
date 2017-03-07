@@ -2,10 +2,10 @@ package com.everettsprojects.sudokubotsolver;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.util.TypedValue;
 
 
-public class SudokuCellView extends TextView {
+public class SudokuCellView extends android.support.v7.widget.AppCompatTextView {
 
     // Default constructor override
     public SudokuCellView(Context context) {
@@ -29,7 +29,9 @@ public class SudokuCellView extends TextView {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        this.setTextSize((bottom - top) / 5);
+        float textSize =  (float) ((bottom - top) / 1.5);
+
+        this.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 
         int widthSpec = MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY);
         int heightSpec = MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY);
