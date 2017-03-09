@@ -29,7 +29,7 @@ public class SudokuCellView extends android.support.v7.widget.AppCompatTextView 
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        float textSize =  (float) ((bottom - top) / 1.5);
+        float textSize =  (float) ((bottom - top) / 1.75);
 
         this.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 
