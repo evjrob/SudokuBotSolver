@@ -95,23 +95,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/keypad_clear_all"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:text="@string/keypad_clear_all" />
 
         <Button
             android:id="@+id/clear_cell_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/keypad_clear_cell"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:text="@string/keypad_clear_cell" />
 
         <Button
             android:id="@+id/solve_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/keypad_solve"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:text="@string/keypad_solve" />
     </LinearLayout>
 </LinearLayout>
